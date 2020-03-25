@@ -34,8 +34,7 @@ def start_Simulation():
         time.sleep(2)
     else:
         print ('Failed connecting to remote API server')
-    print ('Program ended')
-    
+        
     return clientID
 
 
@@ -48,5 +47,23 @@ def stop_Simulation(clientID):
 
     # Now close the connection to CoppeliaSim:
     sim.simxFinish(clientID)
+    print ('Program ended')
 
     return("Sucess!")
+
+
+
+def load_Pioneer3DX(clientID):
+
+    Pioneer3DX = [None] * 19
+    error,Pioneer3DX[0] = sim.simxGetObjectHandle(clientID,'Pioneer_p3dx',sim.simx_opmode_blocking)
+    error,Pioneer3DX[1] = sim.simxGetObjectHandle(clientID,'Pioneer_p3dx_leftMotor',sim.simx_opmode_blocking)
+    error,Pioneer3DX[2] = sim.simxGetObjectHandle(clientID,'Pioneer_p3dx_rightMotor',sim.simx_opmode_blocking)
+
+    Pioneer3DX_sensors = "Pioneer_p3dx_ultrasonicSensor"
+    sensor = 1
+    while sensor < 17:
+        error,Pioneer3DX[2+sensor] = sim.simxGetObjectHandle(clientID,Pioneer3DX_sensors+str(sensor),sim.simx_opmode_blocking)
+        sensor+=1
+
+    return Pioneer3DX
