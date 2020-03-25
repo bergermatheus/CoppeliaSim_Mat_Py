@@ -4,7 +4,7 @@ The class developed here was created to communicate
 Coppelia Simulator with Matlab Software. Now, we
 want to improve the code and make it available in Python.
 
-![](https://media.giphy.com/media/dU0jVmU13fQuDCmntQ/giphy.gif)
+![](https://media.giphy.com/media/dU0jVmU13fQuDCmntQ/giphy.gif | =250x250)
 
 ## Learning purposes
 
