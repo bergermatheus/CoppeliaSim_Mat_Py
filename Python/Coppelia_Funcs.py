@@ -67,3 +67,21 @@ def load_Pioneer3DX(clientID):
         sensor+=1
 
     return Pioneer3DX
+
+
+def send_ControlSignals(Ud,clientID, Pioneer3DX):
+    # left_speed = (v - e w)/R 
+    # right_speed = (v + e w)/R
+    # v is the linear velocity given as parameter
+    # w is the angular velocity given as parameter
+    # e is half of the distance between the left and right wheels
+    # R is the radius of the wheels
+    R= 0.0925;  #raio da roda do Pioneer
+    e = 0.17;   #distancia do centro até a roda
+
+    left_speed  = (Ud[0] - e*Ud[1])/R
+    right_speed = (Ud[0] + e*Ud[1])/R
+
+    error = sim.simxSetJointTargetVelocity(clientID,Pioneer3DX[1],left_speed,sim.simx_opmode_streaming)
+    error_2 = sim.simxSetJointTargetVelocity(clientID,Pioneer3DX[2],right_speed,sim.simx_opmode_streaming)
+    #
