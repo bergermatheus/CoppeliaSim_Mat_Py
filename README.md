@@ -1,12 +1,16 @@
-##Projeto para adaptar codigo matlab para python
+##Project to translate Matlab to Python code
+
+The class developed here was created to communicate
+Coppelia Simulator with Matlab Software. Now, we
+want to improve the code and make it available in Python.
 
 
 ## Lib RemoteApi
 
-- Para utilizar a API corretamente, inserir na pasta do projeto o arquivo de remoteApi compatível com o sistema operacional 
-.dll para windows, .so linux, e .dylib para mac 
+- To use the API correctly, insert on the project folder the remoteApi file compatible with the operating system: 
+.dll for windows, .so linux, and .dylib for mac 
 
-## TODOS
+## TO-DO
 
-1. Carregar cenário, conseguir dar start e pause (.py) ☑
-2. E carregar pioneer 3dx e se possivel, mover (.py)
+1. Load the scene, try to start and pause the simulation from the code (.py) ☑
+2. Load the mobile robot Pioneer 3DX and if possible, move it (.py)
