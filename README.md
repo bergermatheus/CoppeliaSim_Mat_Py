@@ -8,5 +8,5 @@
 
 ## TODOS
 
-1. Carregar cenário, conseguir dar start e pause (.py)
+1. Carregar cenário, conseguir dar start e pause (.py) ☑
 2. E carregar pioneer 3dx e se possivel, mover (.py)
