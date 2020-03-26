@@ -14,6 +14,7 @@ Feel free to colaborate and use everything.
 ## Lib RemoteApi
 
 - To use the API correctly, insert on the project folder the remoteApi file compatible with the operating system: 
+
 .dll for windows, .so linux, and .dylib for mac 
 
 ## Folders and Files
