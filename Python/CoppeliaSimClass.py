@@ -10,15 +10,19 @@
 # should be a corresponding call to simxFinish at the end!
 
 from Coppelia_Funcs import *
+from CoppeliaTest import CoppeliaTest
+from Pioneer3DXTest import Pioneer3DX
 # Start connection and Simulation with CoppeliaSim
-clientID = start_Simulation()
+
+CoppeliaSim = CoppeliaTest()
+CoppeliaSim.start_Simulation()
 
 # Load Mobile Robot Pioneer 3DX
-Pioneer3DX = load_Pioneer3DX(clientID)
+P= Pioneer3DX(CoppeliaSim.clientID)
 
 
 
-send_ControlSignals([0.2,0],clientID, Pioneer3DX)
+send_ControlSignals([0.2,0],CoppeliaSim.clientID, P.pioneer3DX_array)
 
 
 
@@ -29,6 +33,6 @@ while time.time()-startTime < 10:
     time.sleep(0.1)
 
 
-stop_Simulation(clientID)
+CoppeliaSim.stop_Simulation()
 
 
