@@ -21,13 +21,17 @@ Feel free to colaborate and use everything.
 
 There are three different folders in this project.
 
-1. Lib Folder
+1. Lib Folder:
 
-    Contains the remoteApi library that makes the bridge between Matlab and Python with the simulator
+    Contains the remoteApi library that makes the bridge between Matlab and Python with the simulator.
 
-2. Matlab Folder
+2. Matlab Folder:
 
-Contains the Class to comunicate with CoppeliaSim by Matlab. The main file is VREP.m (Constructor Class).
+    Contains the Class to comunicate with CoppeliaSim and Matlab. The main file is VREP.m (Constructor Class).
+
+3. Python Folder:
+
+    Contains the Class to comunicate with CoppeliaSim and Python. The main file is CoppeliaSimClass.py (Contructor Class).
 
 ## TO-DO
 
