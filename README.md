@@ -8,13 +8,24 @@ want to improve the code and make it available in Python.
 
 ## Learning purposes
 
-feel free to colaborate and use everything.
+Feel free to colaborate and use everything.
 
 
 ## Lib RemoteApi
 
 - To use the API correctly, insert on the project folder the remoteApi file compatible with the operating system: 
 .dll for windows, .so linux, and .dylib for mac 
+
+## Folders and Files
+
+There are three different folders in this project.
+
+1. Lib Folder
+Contains the remoteApi library that makes the bridge between Matlab and Python with the simulator
+
+2. Matlab Folder
+
+Contains the Class to comunicate with CoppeliaSim by Matlab. The main file is VREP.m (Constructor Class).
 
 ## TO-DO
 
