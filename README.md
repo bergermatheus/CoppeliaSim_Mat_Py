@@ -22,7 +22,8 @@ Feel free to colaborate and use everything.
 There are three different folders in this project.
 
 1. Lib Folder
-Contains the remoteApi library that makes the bridge between Matlab and Python with the simulator
+
+    Contains the remoteApi library that makes the bridge between Matlab and Python with the simulator
 
 2. Matlab Folder
 
