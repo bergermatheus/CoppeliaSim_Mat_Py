@@ -1,7 +1,7 @@
 import sim
 import time
 
-class CoppeliaTest:
+class Coppelia:
 
     def __init__(self):
         #Library Python to connect with CoppeliaSim
@@ -51,3 +51,11 @@ class CoppeliaTest:
         print ('Program ended')
 
         return None 
+
+
+    def run_Simulation(self, time_interval):
+        startTime=time.time()
+        while time.time()-startTime < time_interval:
+
+            time.sleep(0.1)
+
