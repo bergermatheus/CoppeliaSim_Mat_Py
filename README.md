@@ -46,3 +46,10 @@ There are three different folders in this project.
 3. Start implement the Class and organize the functions ☑
 4. Run a strategy of position controller (.py) ☑
 5. Map environment with 2D Laser Scanner (.py)
+
+
+## Contact
+
+- Matheus Berger Quemelli: matheus.quemelli@gmail.com
+- Emows Lemos: emowslemos@gmail.com
+- André Lobo : andreloboteixeira@gmail.com
