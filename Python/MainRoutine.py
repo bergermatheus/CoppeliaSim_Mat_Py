@@ -21,12 +21,6 @@ CoppeliaSim.start_Simulation()
 # Load Mobile Robot Pioneer 3DX
 P = Pioneer3DX(CoppeliaSim.clientID)
 
-
-
-P.send_ControlSignals([0.2,0])
-
-
-
 ## Main Routine
 # Start time routine
 startTime=time.time()
@@ -45,6 +39,7 @@ while time.time()-startTime < 30:
     Xtil = np.array([X_Desired - P.position_coordX[0:2]])
     Xtil = Xtil.transpose()
 
+    # Inverse kinematic
     a = np.linalg.inv(K)
     b = 0.7*np.tanh(0.5*Xtil)
     # Controller
@@ -55,7 +50,7 @@ while time.time()-startTime < 30:
 
     time.sleep(0.1)
 
-
+# Stop the Simulation when you finish the routine
 CoppeliaSim.stop_Simulation()
 
 

@@ -55,6 +55,7 @@ class Pioneer3DX:
 
 
     def get_PositionData(self):
+        ## Pioneer Velocity
         error, linearVelocity, angularVelocity = sim.simxGetObjectVelocity(self.clientID,self.pioneer3DX_array[0], sim.simx_opmode_buffer)
         ## Pioneer Position
         error, self.position_coordXc = sim.simxGetObjectPosition(self.clientID,self.pioneer3DX_array[0],-1, sim.simx_opmode_buffer)
@@ -63,7 +64,6 @@ class Pioneer3DX:
         self.orientation = angle[2]
         # Linear Transform to find the Control Point
         A = np.array([np.cos(angle[2]), np.sin(angle[2]), 0])
-
         self.position_coordX = self.position_coordXc + 0.15*A
         
         return self.position_coordX
