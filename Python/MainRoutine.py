@@ -45,7 +45,7 @@ while time.time()-startTime < 30:
     # Controller
     Ud = np.dot(a,b)
 
-    # Sendo control signal to Pioneer
+    # Send control signal to Pioneer
     P.send_ControlSignals(Ud)
 
     time.sleep(0.1)
