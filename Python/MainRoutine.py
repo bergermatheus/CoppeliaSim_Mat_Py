@@ -32,17 +32,21 @@ while time.time()-startTime < 30:
     # Get Real Position From Robot
     P.get_PositionData()
     
-    # Direct kinematic
+    # Direct kinematic for differencial drive robot
+    # K = [[cos(theta)  -0.15*sin(theta)
+    #       sin(theta)   0.15*cos(theta)]]
+        
     K = np.array([[np.cos(P.orientation),-0.15*np.sin(P.orientation)],[np.sin(P.orientation),0.15*np.cos(P.orientation)]])
     
     # Position Error
+    # Xtil = [Xdesired Ydesired] - [Xrobot Yrobot]
     Xtil = np.array([X_Desired - P.position_coordX[0:2]])
     Xtil = Xtil.transpose()
 
-    # Inverse kinematic
+    # Inverse kinematic K^-1
     a = np.linalg.inv(K)
+    # Lyapunov Controller: Ud = K^-1*(0.7*tanh(0.5Xtil))
     b = 0.7*np.tanh(0.5*Xtil)
-    # Controller
     Ud = np.dot(a,b)
 
     # Send control signal to Pioneer
