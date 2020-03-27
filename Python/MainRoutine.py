@@ -1,20 +1,17 @@
-# Make sure to have the server side running in CoppeliaSim: 
-# in a child script of a CoppeliaSim scene, add following command
-# to be executed just once, at simulation start:
-#
-# simRemoteApi.start(19999)
-#
-# then start simulation, and run this program.
-#
-# IMPORTANT: for each successful call to simxStart, there
-# should be a corresponding call to simxFinish at the end!
+# Make sure you have imported Coppelia.py and Pioneer3DX.py.
+# Before run this code, open the CoppeliaSim simulator 
+# and load the file scene.ttt
+# This example starts the simulation by itself.
+# The MainRoutine.py shows how to control Pioneer 3DX,
+# a mobile differencial drive robot.
+# The controller applied is based on Lyapunov Theory.
 
 from Coppelia import Coppelia
 from Pioneer3DX import Pioneer3DX
 import time
 import numpy as np
-# Start connection and Simulation with CoppeliaSim
 
+# Load CoppeliaSim Class and Start Run Simulation
 CoppeliaSim = Coppelia()
 CoppeliaSim.start_Simulation()
 
@@ -35,7 +32,6 @@ while time.time()-startTime < 30:
     # Direct kinematic for differencial drive robot
     # K = [[cos(theta)  -0.15*sin(theta)
     #       sin(theta)   0.15*cos(theta)]]
-        
     K = np.array([[np.cos(P.orientation),-0.15*np.sin(P.orientation)],[np.sin(P.orientation),0.15*np.cos(P.orientation)]])
     
     # Position Error
