@@ -1,4 +1,5 @@
 import sim
+import numpy as np
 
 class Pioneer3DX:
 
@@ -7,6 +8,7 @@ class Pioneer3DX:
         self.pioneer3DX_array = [None] * 19
         self.position_coordX = [None] * 3
         self.position_coordXc = [None] * 3
+        self.orientation = None
         self.velocity = [None]* 2
         self.name = "Pioneer_p3dx"
         self.left_motor = 'Pioneer_p3dx_leftMotor'
@@ -55,14 +57,16 @@ class Pioneer3DX:
     def get_PositionData(self):
         error, linearVelocity, angularVelocity = sim.simxGetObjectVelocity(self.clientID,self.pioneer3DX_array[0], sim.simx_opmode_buffer)
         ## Pioneer Position
-        error, position = sim.simxGetObjectPosition(self.clientID,self.pioneer3DX_array[0],-1, sim.simx_opmode_buffer)
+        error, self.position_coordXc = sim.simxGetObjectPosition(self.clientID,self.pioneer3DX_array[0],-1, sim.simx_opmode_buffer)
         ## Pioneer Orientation (alpha, beta e gama)
         error, angle = sim.simxGetObjectOrientation(self.clientID,self.pioneer3DX_array[0],-1,sim.simx_opmode_buffer)
-        
+        self.orientation = angle[2]
         # Linear Transform to find the Control Point
-        #X = Xc + [0.15*cos(orientation(3)); 0.15*sin(orientation(3))]; 
+        A = np.array([np.cos(angle[2]), np.sin(angle[2]), 0])
+
+        self.position_coordX = self.position_coordXc + 0.15*A
         
-        print(position)
+        return self.position_coordX
 
     #def get_UltrasonicData(self):
 
