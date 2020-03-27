@@ -38,5 +38,5 @@ There are three different folders in this project.
 1. Load the scene, try to start and pause the simulation from the code (.py) ☑
 2. Load the mobile robot Pioneer 3DX and if possible, move it (.py) ☑
 3. Start implement the Class and organize the functions ☑
-4. Run a strategy of position controller (.py)
+4. Run a strategy of position controller (.py) ☑
 5. Map environment with 2D Laser Scanner (.py)
