@@ -8,8 +8,10 @@
 
 from Coppelia import Coppelia
 from Pioneer3DX import Pioneer3DX
+from LaserSensor import LaserSensor
 import time
 import numpy as np
+
 
 # Load CoppeliaSim Class and Start Run Simulation
 CoppeliaSim = Coppelia()
@@ -17,6 +19,10 @@ CoppeliaSim.start_Simulation()
 
 # Load Mobile Robot Pioneer 3DX
 P = Pioneer3DX(CoppeliaSim.clientID)
+
+# Load Laser Scanner
+L = LaserSensor(CoppeliaSim.clientID)
+
 
 ## Main Routine
 # Parameters of the circle
@@ -59,6 +65,8 @@ while time.time()-startTime < 30:
     b = 0.4*X_diff.transpose() + 1.4*np.tanh(0.8*Xtil)
     Ud = np.dot(a,b)
     
+    # Laser Scanner
+    L.get_LaserData()
     
     # Send control signal to Pioneer
     P.send_ControlSignals(Ud)
