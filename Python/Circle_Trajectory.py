@@ -9,9 +9,26 @@
 from Coppelia import Coppelia
 from Pioneer3DX import Pioneer3DX
 from LaserSensor import LaserSensor
+import matplotlib.pyplot as plt
 import time
 import numpy as np
 
+## Setting plot 
+
+#fig = plt.figure()
+#ax = fig.add_subplot(111)
+#ax.set_xlim(-5,5)
+#ax.set_ylim(-5,5)
+#fig.show()
+x, y = [], []
+
+fig, ax = plt.subplots()
+#points1, =ax.plot(x, y, 'k-')
+points, = ax.plot(x, y, 'bo', ms=2)
+points1, = ax.plot(x, y, 'k-')
+ax.set_xlim(-6,6)
+ax.set_ylim(-6,6)
+fig.show()
 
 # Load CoppeliaSim Class and Start Run Simulation
 CoppeliaSim = Coppelia()
@@ -22,6 +39,7 @@ P = Pioneer3DX(CoppeliaSim.clientID)
 
 # Load Laser Scanner
 L = LaserSensor(CoppeliaSim.clientID)
+
 
 
 ## Main Routine
@@ -62,16 +80,30 @@ while time.time()-startTime < 30:
     # Inverse kinematic K^-1
     a = np.linalg.inv(K)
     # Lyapunov Controller: Ud = K^-1*(0.4*X_diff + 0.7*tanh(0.5Xtil))
-    b = 0.4*X_diff.transpose() + 1.4*np.tanh(0.8*Xtil)
+    b = 0.3*X_diff.transpose() + 1.2*np.tanh(0.8*Xtil)
     Ud = np.dot(a,b)
     
     # Laser Scanner
-    L.get_LaserData()
+    L.get_LaserData(P.position_coordX[0:2],P.orientation)
+
+    # Save the X and Y coordenates and update plot
+    x.append(P.position_coordX[0])
+    y.append(P.position_coordX[1])
+    
+    #ax.plot(x, y, 'k-')
+    points.set_data(L.LaserDataX, L.LaserDataY)
+    points1.set_data(x,y)
+    #ax.plot(x, y, 'k-')
+
+    fig.canvas.draw()
     
     # Send control signal to Pioneer
     P.send_ControlSignals(Ud)
 
-    time.sleep(0.1)
+    #time.sleep(0.1)
+    plt.pause(0.1)
+
+
 
 # Stop the Simulation when you finish the routine
 CoppeliaSim.stop_Simulation()

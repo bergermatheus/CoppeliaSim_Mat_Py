@@ -9,18 +9,19 @@ V.vConnect;
 V.vHandle('Pioneer_p3dx');
 
 V.vObject('Disc');
-pause(1);
+pause(2);
 %% Get Destination point and Robot Position
 [Goal,~] = V.vGetObjPosition('Disc');
 
 
 %% Declarando a figura
-% figure(1)
-% hold on
-% axis([-6,6,-6,6])
-% Map = V.vGetLaserData(1);
-% h(1)= plot(Map(:,1),Map(:,2),'.b');
-% hold on
+figure(1)
+hold on
+axis([-6,6,-6,6])
+Map = V.vGetLaserData(1);
+
+h(1)= plot(Map(:,1),Map(:,2),'.b');
+hold on
 
 %% Declarando o trace
 Dados=[];
@@ -56,7 +57,10 @@ while toc(t)<tmax
         Pos.Xtil = Pos.Xd([1 2])'-Pos.X([1 2]);
         Pos.Ud = K\(Pos.Xd([7 8])+0.7*tanh(0.5*Pos.Xtil([1 2])));
         
-        
+        delete(h)
+        Map = V.vGetLaserData(1);
+        h(1)= plot(Map(:,1),Map(:,2),'.b');
+        drawnow
         % Send Control Signal to VREP
         V.vSendControlSignals(Pos.Ud,1);
         
