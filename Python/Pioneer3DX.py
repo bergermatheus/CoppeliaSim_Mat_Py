@@ -68,6 +68,9 @@ class Pioneer3DX:
         # Linear Transform to find the Control Point
         A = np.array([np.cos(angle[2]), np.sin(angle[2]), 0])
         self.position_coordX = self.position_coordXc + 0.15*A
+
+        # @remove get functions normally return values(the position and orientation)
+        return self.position_coordX, self.orientation
         
         
 
