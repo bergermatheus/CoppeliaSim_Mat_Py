@@ -15,17 +15,11 @@ import numpy as np
 
 ## Setting plot 
 
-#fig = plt.figure()
-#ax = fig.add_subplot(111)
-#ax.set_xlim(-5,5)
-#ax.set_ylim(-5,5)
-#fig.show()
 x, y = [], []
 
 fig, ax = plt.subplots()
-#points1, =ax.plot(x, y, 'k-')
 points, = ax.plot(x, y, 'bo', ms=2)
-points1, = ax.plot(x, y, 'k-')
+#points1, = ax.plot(x, y, 'k-')
 ax.set_xlim(-6,6)
 ax.set_ylim(-6,6)
 fig.show()
@@ -90,11 +84,11 @@ while time.time()-startTime < 30:
     x.append(P.position_coordX[0])
     y.append(P.position_coordX[1])
     
-    #ax.plot(x, y, 'k-')
+    #Update Dataset from Laser and Robot Position
     points.set_data(L.LaserDataX, L.LaserDataY)
-    points1.set_data(x,y)
-    #ax.plot(x, y, 'k-')
-
+    #points1.set_data(x,y)
+    
+    # Refresh Plot Image
     fig.canvas.draw()
     
     # Send control signal to Pioneer

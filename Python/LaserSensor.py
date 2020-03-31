@@ -18,6 +18,7 @@ class LaserSensor:
 
         # Unpack data to array
         array = sim.simxUnpackFloats(data)
+        
         if len(array)>181:
             for i in range(0, 181):
                 # Separate X and Y coordinates
