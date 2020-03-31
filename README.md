@@ -45,7 +45,8 @@ There are three different folders in this project.
 2. Load the mobile robot Pioneer 3DX and if possible, move it (.py) ☑
 3. Start implement the Class and organize the functions ☑
 4. Run a strategy of position controller (.py) ☑
-5. Map environment with 2D Laser Scanner (.py)
+5. Map environment with 2D Laser Scanner (.py) ☑
+6. Implement avoidance algorithm (Potential Fields)
 
 
 ## Contact
