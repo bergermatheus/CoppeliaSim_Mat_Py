@@ -37,7 +37,7 @@ There are three different folders in this project.
 
 3. Python Folder:
 
-    Contains the Class to comunicate with CoppeliaSim and Python. The main file is CoppeliaSimClass.py (Contructor Class).
+    Contains the Class to comunicate with CoppeliaSim and Python. The main file is CoppeliaSimClass.py (Constructor Class).
 
 ## TO-DO
 
