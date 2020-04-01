@@ -79,8 +79,10 @@ while time.time()-startTime < 30:
     
     # Get direct kinematic (for differential drive robot)
     Kinematic_matrix = get_K_diff_drive_robot(X_currRealOrientation)
-    
-    
+
+    Xtil = np.array([X_Desired - X_currRealPos[0:2]])
+    # Get control signal from Lyapunov Control
+    Ud = lyapunov_controller_signal(Kinematic_matrix, X_diff, Xtil.transpose())
     # Send control signal to Pioneer
     Pioneer3DX.send_ControlSignals(Ud)
     
