@@ -29,3 +29,6 @@ class LaserSensor:
             X0 = np.cos(alpha)*self.LaserDataX - np.sin(alpha)*self.LaserDataY + pos[0]
             Y0 = np.sin(alpha)*self.LaserDataX + np.cos(alpha)*self.LaserDataY + pos[1]
             self.LaserDataX , self.LaserDataY = X0 , Y0 
+
+        # @remove get functions normally return values(the X and Y LaserData)
+        return self.LaserDataX, self.LaserDataY

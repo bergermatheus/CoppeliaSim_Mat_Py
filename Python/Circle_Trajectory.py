@@ -13,90 +13,94 @@ import matplotlib.pyplot as plt
 import time
 import numpy as np
 
-## Setting plot 
-
-x, y = [], []
-
-fig, ax = plt.subplots()
-points, = ax.plot(x, y, 'bo', ms=2)
-#points1, = ax.plot(x, y, 'k-')
-ax.set_xlim(-6,6)
-ax.set_ylim(-6,6)
-fig.show()
 
 # Load CoppeliaSim Class and Start Run Simulation
 CoppeliaSim = Coppelia()
 CoppeliaSim.start_Simulation()
 
 # Load Mobile Robot Pioneer 3DX
-P = Pioneer3DX(CoppeliaSim.clientID)
+Pioneer3DX = Pioneer3DX(CoppeliaSim.clientID)
+
+# Define Direct Kinematic (for differential drive robot)
+def get_K_diff_drive_robot(X_currRealOrientation):
+    # K = [[cos(theta)  -0.15*sin(theta)
+    #       sin(theta)   0.15*cos(theta)]]
+    K = np.array([[np.cos(X_currRealOrientation),-0.15*np.sin(X_currRealOrientation)],[np.sin(X_currRealOrientation),0.15*np.cos(X_currRealOrientation)]])
+    return K
 
 # Load Laser Scanner
-L = LaserSensor(CoppeliaSim.clientID)
+Laser = LaserSensor(CoppeliaSim.clientID)
 
+# Define controller signal
+def lyapunov_controller_signal(kinematic, X_diff, Xtil):
+    # Lyapunov Controller: Ud = K^-1*(0.4*X_diff + 0.7*tanh(0.5Xtil))
+    # Inverse kinematic K^-1
+    a = np.linalg.inv(kinematic)
+    b = 0.3*X_diff.transpose() + 1.2*np.tanh(0.8*Xtil)
+    Ud = np.dot(a,b)
+    return Ud
 
+# Define trajectory
+def get_curr_desired_point_CIRCLE(tStep):
+    # Parameters of the circle
+    r = 1.5
+    T = 30.0
+    w = 1/T
+    return [r * np.cos(2*np.pi*w * tStep), r * np.sin(2*np.pi*w * tStep)]
+
+# Config plot
+shouldPlot = True
+realRobotTraject_x, realRobotTraject_y = [], []
+fig, ax = plt.subplots()
+laserPointsPlot, = ax.plot(realRobotTraject_x, realRobotTraject_y, 'bo', ms=2)
+realRobotTrajectPlot, = ax.plot(realRobotTraject_x, realRobotTraject_y, 'k-')
+ax.set_xlim(-6,6)
+ax.set_ylim(-6,6)
+fig.show()
 
 ## Main Routine
-# Parameters of the circle
-r = 1.5
-T = 30
-w = 1/T
 X_Desired = [0,0]
 X_diff = [0,0]
 # Start time routine
 startTime=time.time()
 while time.time()-startTime < 30:
-    t= time.time()-startTime
+    t = time.time()-startTime
 
-    # Set Circle Trajectory Desired
-    X_Desired[0] = r * np.cos(2*np.pi*w * t)
-    X_Desired[1] = r * np.sin(2*np.pi*w * t)
+    # Set desired trajectory
+    X_Desired = get_curr_desired_point_CIRCLE(t)
     
-
     # Get Real Position From Robot
-    P.get_PositionData()
+    # @remove avoid accessing directly class properties, the get method is for this purpose
+    X_currRealPos, X_currRealOrientation = Pioneer3DX.get_PositionData()
 
-    # Differencial discrete
-    X_diff = np.array([X_Desired - P.position_coordX[0:2]])
-    # X_diff_transp = np.array([[X_diff[0]],[X_diff[1]]])
+    # Differential discrete
+    # @todo generalized to use the [x_1,x_2,x_3], that is, the third coordinator
+    X_diff = np.array([X_Desired - X_currRealPos[0:2]])
     
-
-    # Direct kinematic for differencial drive robot
-    # K = [[cos(theta)  -0.15*sin(theta)
-    #       sin(theta)   0.15*cos(theta)]]
-    K = np.array([[np.cos(P.orientation),-0.15*np.sin(P.orientation)],[np.sin(P.orientation),0.15*np.cos(P.orientation)]])
+    # Get direct kinematic (for differential drive robot)
+    Kinematic_matrix = get_K_diff_drive_robot(X_currRealOrientation)
     
-    # Position Error
-    # Xtil = [Xdesired Ydesired] - [Xrobot Yrobot]
-    Xtil = np.array([X_Desired - P.position_coordX[0:2]])
-    Xtil = Xtil.transpose()
-
-    # Inverse kinematic K^-1
-    a = np.linalg.inv(K)
-    # Lyapunov Controller: Ud = K^-1*(0.4*X_diff + 0.7*tanh(0.5Xtil))
-    b = 0.3*X_diff.transpose() + 1.2*np.tanh(0.8*Xtil)
-    Ud = np.dot(a,b)
-    
-    # Laser Scanner
-    L.get_LaserData(P.position_coordX[0:2],P.orientation)
-
-    # Save the X and Y coordenates and update plot
-    x.append(P.position_coordX[0])
-    y.append(P.position_coordX[1])
-    
-    #Update Dataset from Laser and Robot Position
-    points.set_data(L.LaserDataX, L.LaserDataY)
-    #points1.set_data(x,y)
-    
-    # Refresh Plot Image
-    fig.canvas.draw()
     
     # Send control signal to Pioneer
-    P.send_ControlSignals(Ud)
+    Pioneer3DX.send_ControlSignals(Ud)
+    
+    # Get Laser Scanner data
+    currLaserDataX, currLaserDataY = Laser.get_LaserData(X_currRealPos[0:2],X_currRealOrientation)
 
-    #time.sleep(0.1)
-    plt.pause(0.1)
+    # flag to activate plot
+    if shouldPlot:
+        #print('*** PLOT')
+        # Save the X and Y robot coordinates and...
+        realRobotTraject_x.append(X_currRealPos[0])
+        realRobotTraject_y.append(X_currRealPos[1])
+        # ... update plot
+        laserPointsPlot.set_data(currLaserDataX, currLaserDataY)
+        realRobotTrajectPlot.set_data(realRobotTraject_x,realRobotTraject_y)
 
+        fig.canvas.draw()
+        plt.pause(0.1)
+    else:
+        time.sleep(0.1)
 
 
 # Stop the Simulation when you finish the routine
