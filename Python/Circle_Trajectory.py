@@ -80,11 +80,6 @@ while time.time()-startTime < 30:
     # Get direct kinematic (for differential drive robot)
     Kinematic_matrix = get_K_diff_drive_robot(X_currRealOrientation)
     
-    # Position Error:    Xtil = [Xdesired Ydesired] - [Xrobot Yrobot]
-    Xtil = np.array([X_Desired - X_currRealPos[0:2]]).transpose()
-
-    # Compute control signal
-    Ud = lyapunov_controller_signal(Kinematic_matrix, X_diff, Xtil)
     
     # Send control signal to Pioneer
     Pioneer3DX.send_ControlSignals(Ud)
@@ -94,7 +89,7 @@ while time.time()-startTime < 30:
 
     # flag to activate plot
     if shouldPlot:
-        print('*** PLOT')
+        #print('*** PLOT')
         # Save the X and Y robot coordinates and...
         realRobotTraject_x.append(X_currRealPos[0])
         realRobotTraject_y.append(X_currRealPos[1])
