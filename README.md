@@ -4,7 +4,7 @@ The class developed here was created to communicate
 Coppelia Simulator with Matlab Software. Now, we
 want to improve the code and make it available in Python.
 
-<img src="https://media.giphy.com/media/fW4PzpIV9itKgYdIxF/giphy.gif" height="250" width="450">
+<img src="https://media.giphy.com/media/UuZMcNDe2mhHvPrUNF/giphy.gif" height="250" width="450">
 
 ## Learning purposes
 
@@ -46,7 +46,7 @@ There are three different folders in this project.
 3. Start implement the Class and organize the functions ☑
 4. Run a strategy of position controller (.py) ☑
 5. Map environment with 2D Laser Scanner (.py) ☑
-6. Implement avoidance algorithm (Potential Fields)
+6. Implement avoidance algorithm (Potential Fields) ☑
 
 
 ## Contact
