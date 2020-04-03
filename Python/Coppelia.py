@@ -15,6 +15,7 @@ class Coppelia:
         sim.simxFinish(-1) 
         # Connect to CoppeliaSim, as continuous remote API Server
         self.clientID = sim.simxStart('127.0.0.1',19997,False,True,5000,5)
+        
         if self.clientID!=-1:
             print ('Connected to remote API server')
             #Start simulation
