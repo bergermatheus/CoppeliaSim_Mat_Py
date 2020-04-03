@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 import time
 import numpy as np
 
-
 # Load CoppeliaSim Class and Start Run Simulation
 CoppeliaSim = Coppelia()
 CoppeliaSim.start_Simulation()
@@ -21,32 +20,8 @@ CoppeliaSim.start_Simulation()
 # Load Mobile Robot Pioneer 3DX
 Pioneer3DX = Pioneer3DX(CoppeliaSim.clientID)
 
-# Define Direct Kinematic (for differential drive robot)
-def get_K_diff_drive_robot(X_currRealOrientation):
-    # K = [[cos(theta)  -0.15*sin(theta)
-    #       sin(theta)   0.15*cos(theta)]]
-    K = np.array([[np.cos(X_currRealOrientation),-0.15*np.sin(X_currRealOrientation)],[np.sin(X_currRealOrientation),0.15*np.cos(X_currRealOrientation)]])
-    return K
-
 # Load Laser Scanner
 Laser = LaserSensor(CoppeliaSim.clientID)
-
-# Define controller signal
-def lyapunov_controller_signal(kinematic, X_diff, Xtil):
-    # Lyapunov Controller: Ud = K^-1*(0.4*X_diff + 0.7*tanh(0.5Xtil))
-    # Inverse kinematic K^-1
-    a = np.linalg.inv(kinematic)
-    b = 0.3*X_diff.transpose() + 1.2*np.tanh(0.8*Xtil)
-    Ud = np.dot(a,b)
-    return Ud
-
-# Define trajectory
-def get_curr_desired_point_CIRCLE(tStep):
-    # Parameters of the circle
-    r = 1.5
-    T = 30.0
-    w = 1/T
-    return [r * np.cos(2*np.pi*w * tStep), r * np.sin(2*np.pi*w * tStep)]
 
 # Config plot
 shouldPlot = True
@@ -67,7 +42,7 @@ while time.time()-startTime < 30:
     t = time.time()-startTime
 
     # Set desired trajectory
-    X_Desired = get_curr_desired_point_CIRCLE(t)
+    X_Desired = Pioneer3DX.get_curr_desired_point_CIRCLE(t)
     
     # Get Real Position From Robot
     # @remove avoid accessing directly class properties, the get method is for this purpose
@@ -78,11 +53,11 @@ while time.time()-startTime < 30:
     X_diff = np.array([X_Desired - X_currRealPos[0:2]])
     
     # Get direct kinematic (for differential drive robot)
-    Kinematic_matrix = get_K_diff_drive_robot(X_currRealOrientation)
+    Kinematic_matrix = Pioneer3DX.get_K_diff_drive_robot(X_currRealOrientation)
 
     Xtil = np.array([X_Desired - X_currRealPos[0:2]])
     # Get control signal from Lyapunov Control
-    Ud = lyapunov_controller_signal(Kinematic_matrix, X_diff, Xtil.transpose())
+    Ud = Pioneer3DX.lyapunov_controller_signal(Kinematic_matrix, X_diff, Xtil.transpose())
     
     
     # Get Laser Scanner data

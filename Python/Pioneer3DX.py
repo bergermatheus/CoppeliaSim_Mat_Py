@@ -82,3 +82,27 @@ class Pioneer3DX:
             self.ultrasonic[num-1,2] = np.linalg.norm(self.ultrasonic[num-1,0:2])*DetectionState
             num+=1
         print(self.ultrasonic[:,2])
+
+    # Define Direct Kinematic (for differential drive robot)
+    def get_K_diff_drive_robot(self, X_currRealOrientation):
+        # K = [[cos(theta)  -0.15*sin(theta)
+        #       sin(theta)   0.15*cos(theta)]]
+        K = np.array([[np.cos(X_currRealOrientation),-0.15*np.sin(X_currRealOrientation)],[np.sin(X_currRealOrientation),0.15*np.cos(X_currRealOrientation)]])
+        return K
+
+    # Define controller signal
+    def lyapunov_controller_signal(self, kinematic, X_diff, Xtil):
+        # Lyapunov Controller: Ud = K^-1*(0.4*X_diff + 0.7*tanh(0.5Xtil))
+        # Inverse kinematic K^-1
+        a = np.linalg.inv(kinematic)
+        b = 0.3*X_diff.transpose() + 1.2*np.tanh(0.8*Xtil)
+        Ud = np.dot(a,b)
+        return Ud
+
+    # Define trajectory
+    def get_curr_desired_point_CIRCLE(self, tStep):
+        # Parameters of the circle
+        r = 1.5
+        T = 30.0
+        w = 1/T
+        return [r * np.cos(2*np.pi*w * tStep), r * np.sin(2*np.pi*w * tStep)]
