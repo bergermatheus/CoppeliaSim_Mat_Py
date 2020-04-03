@@ -103,6 +103,6 @@ class Pioneer3DX:
     def get_curr_desired_point_CIRCLE(self, tStep):
         # Parameters of the circle
         r = 1.5
-        T = 30.0
+        T = 40.0
         w = 1/T
         return [r * np.cos(2*np.pi*w * tStep), r * np.sin(2*np.pi*w * tStep)]
