@@ -45,16 +45,15 @@ while time.time()-startTime < 30:
     X_Desired = Pioneer3DX.get_curr_desired_point_CIRCLE(t)
     
     # Get Real Position From Robot
-    # @remove avoid accessing directly class properties, the get method is for this purpose
     X_currRealPos, X_currRealOrientation = Pioneer3DX.get_PositionData()
 
     # Differential discrete
-    # @todo generalized to use the [x_1,x_2,x_3], that is, the third coordinator
     X_diff = np.array([X_Desired - X_currRealPos[0:2]])
     
     # Get direct kinematic (for differential drive robot)
     Kinematic_matrix = Pioneer3DX.get_K_diff_drive_robot(X_currRealOrientation)
 
+    # Get the error position
     Xtil = np.array([X_Desired - X_currRealPos[0:2]])
     # Get control signal from Lyapunov Control
     Ud = Pioneer3DX.lyapunov_controller_signal(Kinematic_matrix, X_diff, Xtil.transpose())
