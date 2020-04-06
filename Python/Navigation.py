@@ -19,18 +19,19 @@ def avoidance_Potencial_Field(currLaserDataX,currLaserDataY,X_currRealPos,X_Desi
         Distance  = np.hypot(currLaserDataX[i]-X_currRealPos[0],currLaserDataY[i]-X_currRealPos[1])
         
         #if the distance is shorter than 0.9 meter
+        # Calculate the repulsive force
         if Distance <= 0.9:
             Force_rep[0] = -(Fk/Distance**2)*(currLaserDataX[i]-X_currRealPos[0])/Distance
             Force_rep[1] = -(Fk/Distance**2)*(currLaserDataY[i]-X_currRealPos[1])/Distance
             Repulse_vector = Repulse_vector + Force_rep
             flag_avoid = True
     
-    ## Lyapunov for avoidance
+    ## Then calculate the atractive force as well
     if flag_avoid:
         # Positive Force       
         Dist_Robot_Goal = np.hypot(X_Desired[0]-X_currRealPos[0],X_Desired[1]-X_currRealPos[1])
         Force_atrac =Fc*(X_Desired-X_currRealPos[0:2])/Dist_Robot_Goal
         Force_atrac = np.array([Force_atrac])
-        # Result Vector
+        # Finally sum the vector to find the resultant force
         Force_result = Repulse_vector+Force_atrac.transpose()
     return flag_avoid, Force_result
