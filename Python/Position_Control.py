@@ -17,38 +17,33 @@ CoppeliaSim = Coppelia()
 CoppeliaSim.start_Simulation()
 
 # Load Mobile Robot Pioneer 3DX
-P = Pioneer3DX(CoppeliaSim.clientID)
+Pioneer3DX = Pioneer3DX(CoppeliaSim.clientID)
 
 ## Main Routine
 # Start time routine
 startTime=time.time()
-while time.time()-startTime < 5:
+while time.time()-startTime < 15:
 
-    # Set Position Desired
-    X_Desired = [3,0]
+    # Set desired Position
+    X_Desired = [-2, 0]
 
     # Get Real Position From Robot
-    P.get_PositionData()
-    
-    # Direct kinematic for differencial drive robot
-    # K = [[cos(theta)  -0.15*sin(theta)
-    #       sin(theta)   0.15*cos(theta)]]
-    K = np.array([[np.cos(P.orientation),-0.15*np.sin(P.orientation)],[np.sin(P.orientation),0.15*np.cos(P.orientation)]])
-    
-    # Position Error
-    # Xtil = [Xdesired Ydesired] - [Xrobot Yrobot]
-    Xtil = np.array([X_Desired - P.position_coordX[0:2]])
-    Xtil = Xtil.transpose()
+    X_currRealPos, X_currRealOrientation = Pioneer3DX.get_PositionData()
 
-    # Inverse kinematic K^-1
-    a = np.linalg.inv(K)
-    # Lyapunov Controller: Ud = K^-1*(0.7*tanh(0.5Xtil))
-    b = 0.7*np.tanh(0.5*Xtil)
-    Ud = np.dot(a,b)
+    # Differential discrete
+    X_diff = np.array([[0,0]])
     
-    
+    # Get direct kinematic (for differential drive robot)
+    Kinematic_matrix = Pioneer3DX.get_K_diff_drive_robot(X_currRealOrientation)
+
+    # Get position error 
+    Xtil = np.array([X_Desired - X_currRealPos[0:2]])
+
+    # Get control signal from Lyapunov Control Ud = [linear,algular]
+    Ud = Pioneer3DX.lyapunov_controller_signal(Kinematic_matrix, X_diff, Xtil.transpose())
+  
     # Send control signal to Pioneer
-    P.send_ControlSignals(Ud)
+    Pioneer3DX.send_ControlSignals(Ud)
 
     time.sleep(0.1)
 

@@ -95,7 +95,7 @@ class Pioneer3DX:
         # Lyapunov Controller: Ud = K^-1*(0.4*X_diff + 0.7*tanh(0.5Xtil))
         # Inverse kinematic K^-1
         a = np.linalg.inv(kinematic)
-        b = 0.3*X_diff.transpose() + 1*np.tanh(0.8*Xtil)
+        b = 0.3*X_diff.transpose() + 0.7*np.tanh(0.8*Xtil)
         Ud = np.dot(a,b)
         return Ud
 
