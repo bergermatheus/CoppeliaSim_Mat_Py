@@ -23,6 +23,53 @@ Pioneer3DX = Pioneer3DX(CoppeliaSim.clientID)
 # Load Laser Scanner
 Laser = LaserSensor(CoppeliaSim.clientID)
 
+
+def Tracking_objects(currLaserDataX,currLaserDataY,X_currRealPos):
+    #Tracking objects
+    Derivative = []
+    Polar_dist = np.hypot(currLaserDataX-X_currRealPos[0],currLaserDataY-X_currRealPos[1])
+    Derivative = np.zeros([len(Polar_dist)])
+    First_vert = []
+    Last_vert = []
+    # Discrete derivative for the Polar Distance
+    for i in range(0, len(Polar_dist)-1):
+        Derivative[i] = Polar_dist[i+1] -Polar_dist[i] 
+        if Derivative[i]<-0.5:
+            First_vert.append(i+1)
+        elif Derivative[i]>0.5:
+            Last_vert.append(i)
+
+        if len(First_vert) ==0 and len(Last_vert)==1:
+            First_vert.append(0)
+    
+    if len(First_vert)>len(Last_vert):
+        Last_vert.append(len(Polar_dist)-1)
+    
+    # Center of the tracking objects
+    X_center = []
+    Y_center = []
+    Circle_target_x = []
+    Circle_target_y = []
+    if len(First_vert) == len(Last_vert):
+        X_center = (currLaserDataX[First_vert]+currLaserDataX[Last_vert])/2
+        Y_center = (currLaserDataY[First_vert]+currLaserDataY[Last_vert])/2
+        Circle_target_x = np.array([0])
+        Circle_target_y = np.array([0])
+        for i in range(0,len(X_center)):
+            radio = np.hypot(X_center[i]-currLaserDataX[First_vert[i]],Y_center[i]-currLaserDataY[First_vert[i]])
+            Circle_target_x = np.append(Circle_target_x,[(radio+0.1) * np.cos(np.linspace(0,2*np.pi,90)) + X_center[i]])
+            Circle_target_y = np.append(Circle_target_y,[(radio+0.1) * np.sin(np.linspace(0,2*np.pi,90)) + Y_center[i]])
+        Circle_target_x = np.delete(Circle_target_x, 0)
+        Circle_target_y = np.delete(Circle_target_y, 0)
+
+    return Circle_target_x, Circle_target_y
+
+
+
+
+
+
+
 # Config plot
 shouldPlot = True
 realRobotTraject_x, realRobotTraject_y = [], []
@@ -33,7 +80,7 @@ degrees = np.array(range(0,181))
 degrees = degrees - 90
 PolarGraph, = ax.plot(realRobotTraject_x,realRobotTraject_y, 'b-')
 Tracking_first, = ax.plot(realRobotTraject_x,realRobotTraject_y, 'ro')
-Tracking_last, = ax.plot(realRobotTraject_x,realRobotTraject_y, 'ro')
+Tracking_last, = ax.plot(realRobotTraject_x,realRobotTraject_y, 'ro', ms=0.5)
 ax.set_xlim(-6,6)
 ax.set_ylim(-6,6)
 fig.show()
@@ -67,30 +114,9 @@ while time.time()-startTime <30:
     
     # Get Laser Scanner data
     currLaserDataX, currLaserDataY = Laser.get_LaserData(X_currRealPos[0:2],X_currRealOrientation)
-
-    #Tracking objects
-    Derivative = []
-    Polar_dist = np.hypot(currLaserDataX-X_currRealPos[0],currLaserDataY-X_currRealPos[1])
-    Derivative = np.zeros([len(Polar_dist)])
-    for i in range(0, len(Polar_dist)-1):
-        Derivative[i] = Polar_dist[i+1] -Polar_dist[i] 
-
-    #Derivative = np.gradient(Polar_dist)
-    First_vert = []
-    Last_vert = []
-    for i in range(0,len(Derivative)):
-        if Derivative[i]<-0.5:
-            First_vert.append(i+1)
-        elif Derivative[i]>0.5:
-            Last_vert.append(i)
-
-    #print(Derivative[First_vert])
-    #print(Derivative[Last_vert])
-
-    #print(First_vert)
-    #print(Last_vert)
-    #print(Derivative)
-
+    # Tracking Objects with Laser Scanner
+    Circle_target_x, Circle_target_y = Tracking_objects(currLaserDataX,currLaserDataY,X_currRealPos)
+    
     # Send control signal to Pioneer
     Pioneer3DX.send_ControlSignals(Ud)
 
@@ -102,11 +128,9 @@ while time.time()-startTime <30:
         #realRobotTraject_y.append(X_currRealPos[1])
         # ... update plot
         laserPointsPlot.set_data(currLaserDataX, currLaserDataY)
-        #realRobotTrajectPlot.set_data(realRobotTraject_x,realRobotTraject_y)
-        
-        #PolarGraph.set_data(degrees,Derivative)
-        Tracking_first.set_data(currLaserDataX[First_vert],currLaserDataY[First_vert])
-        Tracking_last.set_data(currLaserDataX[Last_vert],currLaserDataY[Last_vert])
+        #Tracking_first.set_data(currLaserDataX[First_vert],currLaserDataY[First_vert])
+        #Tracking_last.set_data(currLaserDataX[Last_vert],currLaserDataY[Last_vert])
+        Tracking_last.set_data(Circle_target_x,Circle_target_y)
         fig.canvas.draw()
         plt.pause(0.1)
     else:

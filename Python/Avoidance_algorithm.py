@@ -2,10 +2,11 @@
 # Before run this code, open the CoppeliaSim simulator 
 # and load the file scene.ttt
 # This example starts the simulation by itself.
-# The Circle_Trajectory.py shows how to control Pioneer 3DX in a circle,
-# a mobile differencial drive robot.
+# The Avoidance_algorithm.py shows how to implement a
+# obstacle avoidance strategy, using Potencial Fields.
 # The controller applied is based on Lyapunov Theory.
 
+## Import the libraries you need
 from Coppelia import Coppelia
 from Pioneer3DX import Pioneer3DX
 from LaserSensor import LaserSensor
@@ -30,24 +31,6 @@ def get_K_diff_drive_robot(X_currRealOrientation):
 
 # Load Laser Scanner
 Laser = LaserSensor(CoppeliaSim.clientID)
-
-# Define controller signal
-def lyapunov_controller_signal(kinematic, X_diff, Xtil):
-    # Lyapunov Controller: Ud = K^-1*(0.4*X_diff + 0.7*tanh(0.5Xtil))
-    # Inverse kinematic K^-1
-    a = np.linalg.inv(kinematic)
-    b = 0*X_diff.transpose() + 0.7*np.tanh(0.8*Xtil)
-    Ud = np.dot(a,b)
-    return Ud
-
-# Define trajectory
-def get_curr_desired_point_CIRCLE(tStep):
-    # Parameters of the circle
-    r = 1.5
-    T = 30.0
-    w = 1/T
-    return [r * np.cos(2*np.pi*w * tStep), r * np.sin(2*np.pi*w * tStep)]
-
 
 # Define Avoidance Strategy
 ## Potencial Field avoidance obstacles function
@@ -105,21 +88,22 @@ while time.time()-startTime < 55:
     # Set desired trajectory
     #X_Desired = get_curr_desired_point_CIRCLE(t)
     X_Desired = [3.15, 0]
+
     # Get Real Position From Robot
-    # @remove avoid accessing directly class properties, the get method is for this purpose
     X_currRealPos, X_currRealOrientation = Pioneer3DX.get_PositionData()
 
     # Differential discrete
-    # @todo generalized to use the [x_1,x_2,x_3], that is, the third coordinator
     X_diff = np.array([X_Desired - X_currRealPos[0:2]])
     
     # Get direct kinematic (for differential drive robot)
-    Kinematic_matrix = get_K_diff_drive_robot(X_currRealOrientation)
+    Kinematic_matrix = Pioneer3DX.get_K_diff_drive_robot(X_currRealOrientation)
 
+    # Get position error 
     Xtil = np.array([X_Desired - X_currRealPos[0:2]])
-    # Get control signal from Lyapunov Control
-    Ud = lyapunov_controller_signal(Kinematic_matrix, X_diff, Xtil.transpose())
-    
+
+    # Get control signal from Lyapunov Control Ud = [linear,algular]
+    Ud = Pioneer3DX.lyapunov_controller_signal(Kinematic_matrix, X_diff, Xtil.transpose())
+
     
     # Get Laser Scanner data
     currLaserDataX, currLaserDataY = Laser.get_LaserData(X_currRealPos[0:2],X_currRealOrientation)
@@ -127,12 +111,12 @@ while time.time()-startTime < 55:
     # Apply avoidance Algorithm (Potencial Field)
     flag_avoid, Force_result = avoidance_Potencial_Field(currLaserDataX,currLaserDataY)
     
+    # If the distance from the robot to the obstacle is closer than 0.8m
     if flag_avoid:
         X_diff = np.array([[0,0]])
-        
-        Ud = lyapunov_controller_signal(Kinematic_matrix, X_diff, Force_result)
-        
+        Ud = Pioneer3DX.lyapunov_controller_signal(Kinematic_matrix, X_diff, Force_result)
         Pioneer3DX.send_ControlSignals(Ud)
+        # Disable flag to recalculate the distance
         flag_avoid = False
     else:
         # Send control signal to Pioneer
@@ -144,8 +128,11 @@ while time.time()-startTime < 55:
         realRobotTraject_x.append(X_currRealPos[0])
         realRobotTraject_y.append(X_currRealPos[1])
         # ... update plot
+        # Laser plot
         laserPointsPlot.set_data(currLaserDataX, currLaserDataY)
+        # Robot track
         realRobotTrajectPlot.set_data(realRobotTraject_x,realRobotTraject_y)
+        # Goal point
         Goal.set_data(X_Desired[0],X_Desired[1])
         RobotPosition.set_data(X_currRealPos[0],X_currRealPos[1])
         fig.canvas.draw()
