@@ -11,6 +11,7 @@ from Coppelia import Coppelia
 from Pioneer3DX import Pioneer3DX
 from LaserSensor import LaserSensor
 import matplotlib.pyplot as plt
+from Navigation import *
 import time
 import numpy as np
 
@@ -24,37 +25,6 @@ Pioneer3DX = Pioneer3DX(CoppeliaSim.clientID)
 
 # Load Laser Scanner
 Laser = LaserSensor(CoppeliaSim.clientID)
-
-# Define Avoidance Strategy
-## Potencial Field avoidance obstacles function
-def avoidance_Potencial_Field(currLaserDataX,currLaserDataY):
-    Force_rep = np.zeros((2,1))
-    Force_result = np.zeros((2,1))
-    Repulse_vector = np.zeros((2,1))
-    Atract_vector = np.zeros((2,1))
-    Fk = 0.007 #constante de respulsao
-    Fc = 0.6  #constante de atracao
-    flag_avoid = False
-    #Distance from Robot to obstacles
-    for i in range(0,len(currLaserDataX)):
-        Distance  = np.hypot(currLaserDataX[i]-X_currRealPos[0],currLaserDataY[i]-X_currRealPos[1])
-        
-        #if the distance is shorter than 1 meter
-        if Distance <= 0.8:
-            Force_rep[0] = -(Fk/Distance**2)*(currLaserDataX[i]-X_currRealPos[0])/Distance
-            Force_rep[1] = -(Fk/Distance**2)*(currLaserDataY[i]-X_currRealPos[1])/Distance
-            Repulse_vector = Repulse_vector + Force_rep
-            flag_avoid = True
-    
-    ## Lyapunov for avoidance
-    if flag_avoid:
-        # Positive Force       
-        Dist_Robot_Goal = np.hypot(X_Desired[0]-X_currRealPos[0],X_Desired[1]-X_currRealPos[1])
-        Force_atrac =Fc*(X_Desired-X_currRealPos[0:2])/Dist_Robot_Goal
-        Force_atrac = np.array([Force_atrac])
-        # Result Vector
-        Force_result = Repulse_vector+Force_atrac.transpose()
-    return flag_avoid, Force_result
 
 
 # Config plot
@@ -75,7 +45,7 @@ X_diff = [0,0]
 
 # Start time routine
 startTime=time.time()
-while time.time()-startTime < 55:
+while time.time()-startTime < 40:
     t = time.time()-startTime
 
     # Set desired trajectory
@@ -102,7 +72,7 @@ while time.time()-startTime < 55:
     currLaserDataX, currLaserDataY = Laser.get_LaserData(X_currRealPos[0:2],X_currRealOrientation)
     
     # Apply avoidance Algorithm (Potencial Field)
-    flag_avoid, Force_result = avoidance_Potencial_Field(currLaserDataX,currLaserDataY)
+    flag_avoid, Force_result = avoidance_Potencial_Field(currLaserDataX,currLaserDataY,X_currRealPos,X_Desired)
     
     # If the distance from the robot to the obstacle is closer than 0.8m
     if flag_avoid:
