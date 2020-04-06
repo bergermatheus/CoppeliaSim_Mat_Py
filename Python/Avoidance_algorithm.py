@@ -22,13 +22,6 @@ CoppeliaSim.start_Simulation()
 # Load Mobile Robot Pioneer 3DX
 Pioneer3DX = Pioneer3DX(CoppeliaSim.clientID)
 
-# Define Direct Kinematic (for differential drive robot)
-def get_K_diff_drive_robot(X_currRealOrientation):
-    # K = [[cos(theta)  -0.15*sin(theta)
-    #       sin(theta)   0.15*cos(theta)]]
-    K = np.array([[np.cos(X_currRealOrientation),-0.15*np.sin(X_currRealOrientation)],[np.sin(X_currRealOrientation),0.15*np.cos(X_currRealOrientation)]])
-    return K
-
 # Load Laser Scanner
 Laser = LaserSensor(CoppeliaSim.clientID)
 
