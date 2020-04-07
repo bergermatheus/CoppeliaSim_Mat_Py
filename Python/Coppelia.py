@@ -53,10 +53,3 @@ class Coppelia:
 
         return None 
 
-
-    def run_Simulation(self, time_interval):
-        startTime=time.time()
-        while time.time()-startTime < time_interval:
-
-            time.sleep(0.1)
-

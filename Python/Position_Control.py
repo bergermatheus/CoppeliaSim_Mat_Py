@@ -25,7 +25,7 @@ startTime=time.time()
 while time.time()-startTime < 15:
 
     # Set desired Position
-    X_Desired = [-2, 0]
+    X_Desired = [-2, 2]
 
     # Get Real Position From Robot
     X_currRealPos, X_currRealOrientation = Pioneer3DX.get_PositionData()
