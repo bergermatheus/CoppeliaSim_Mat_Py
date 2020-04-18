@@ -47,7 +47,8 @@ There are three different folders in this project.
 4. Run a strategy of position controller (.py) ☑
 5. Map environment with 2D Laser Scanner (.py) ☑
 6. Implement avoidance algorithm (Potential Fields) ☑
-7. Implement the detection of objects on the scene
+7. Implement the detection of objects on the scene ☑
+8. 
 
 ## Contact
 
